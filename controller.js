@@ -20,7 +20,11 @@ export const handleCommonRequest = async (req, res) => {
         // Greet the user and tell them if they are whitelisted
         const isInWhitelist = donaterUsernames.includes('@' + username)
         if (!isInWhitelist) {
-            await sendMsg(chatId, `${texts.greeting} ${username}! ${texts.notWhitelistedText}`)
+            let appeal = !!username ? username : req.body.message.from.firstName
+            appeal = !!appeal ? ' ' + appeal : '' // with or without leading space
+            const textForNonDonaters = `${texts.greeting}${appeal}! ${texts.notWhitelisted}`
+            await sendMsg(chatId, textForNonDonaters)
+
         } else {
             speakWithDonater(chatId, username)
         }

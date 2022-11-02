@@ -16,3 +16,7 @@
 - .env
 - resources/secretVideos.json           # file containing the list of secret videos as objects array: `[{name: "Nazvanie", url: "URL_TO_YT_VIDEO"}]`
 - resources/tg_rassilka_tochnii.rtf     # this is a file you send me :) i just renamed it from kirrilic to latin
+
+
+# TODO:
+- [ ] Verification by phone number
