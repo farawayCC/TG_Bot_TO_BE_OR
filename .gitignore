@@ -125,3 +125,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+resources/secretVideos.json
+resources/tg_rassilka_tochnii.rtf
+resources/donatersList.json
