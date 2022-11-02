@@ -1,25 +1,14 @@
 import dotenv from 'dotenv'
 dotenv.config()
-import express from 'express'
-import bodyParser from 'body-parser'
-import axios from 'axios';
-import { handleCommonRequest } from './controller.js'
-import { TELEGRAM_API, WEBHOOK_URL, URI } from './config.js'
+import TelegramBot from 'node-telegram-bot-api'
+import { TOKEN } from './config.js'
+import { handleCommonRequest } from './controller.js';
 
 
-const app = express();
-app.use(bodyParser.json());
+// Create a bot that uses 'polling' to fetch new updates
+const bot = new TelegramBot(TOKEN, { polling: true });
 
-app.post(URI, handleCommonRequest);
+// Listen for any kind of message. There are different kinds of
+// messages.
+bot.on('message', (msg) => handleCommonRequest(msg, bot));
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, async () => {
-    console.log(`Server is listening on port ${PORT}`);
-
-    // Set webhook
-    const responseWH = await axios
-        .get(`${TELEGRAM_API}/setWebhook?url=${WEBHOOK_URL}`)
-    console.log('Webhook response:', responseWH.data);
-});
-
-export default app

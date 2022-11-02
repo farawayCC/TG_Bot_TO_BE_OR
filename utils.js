@@ -1,15 +1,6 @@
 import parseRTF from 'rtf-parser'
 import fs from 'fs'
-import axios from 'axios'
-import { TELEGRAM_API } from './config.js'
 
-
-export const sendMsg = async (chat_id, text) => {
-    await axios.post(`${TELEGRAM_API}/sendMessage`, {
-        chat_id,
-        text
-    });
-}
 
 export class Donaters {
     donatersWhitelistPromise // Parsed list from ./resources/tg_rassilka_tochnii.rtf. WITHOUT TELEPHONES!
@@ -18,6 +9,8 @@ export class Donaters {
     constructor() {
         this.donatersWhitelistPromise = this.constructTheList();
         this.secretVideos = this.constructSecretVideosList();
+        const phonesPath = './resources/telephones.json'
+        this.phoneNumbers = fs.existsSync(phonesPath) ? JSON.parse(fs.readFileSync(phonesPath)) : null
     }
 
     async constructTheList() {
@@ -39,8 +32,8 @@ export class Donaters {
 
         // Remove Telephones from the list
         donatersListDirty = JSON.stringify(donatersListDirty)
+        this.extractPhoneNumbers(donatersListDirty)
         donatersListDirty = donatersListDirty.replace(/,"Телефон".*/g, '') + ']' // get rid of everything followed after ',"Телефон"
-        console.log('Warning, we have removed telephones from the list. Pls handle them manually')
         donatersListDirty = JSON.parse(donatersListDirty)
 
         const itemIsTGUsername = (item) => {
@@ -73,6 +66,17 @@ export class Donaters {
         return uniqueList
     }
 
+    extractPhoneNumbers(donatersListDirty) {
+        const startStringForTelephones = '"Телефон",'
+        const telephonesIndex = donatersListDirty.indexOf(startStringForTelephones)
+        // telephones text = from telephonesIndex to the end of the string
+        let telephonesText = donatersListDirty.slice(telephonesIndex + startStringForTelephones.length, donatersListDirty.length)
+        telephonesText = telephonesText.replace(',null]', '')
+        telephonesText = telephonesText
+        console.log("This is a telephonesText", telephonesText)
+        console.log('Please fill them manually into the file ./resources/telephones.json as an array of strings')
+    }
+
     constructSecretVideosList() {
         const secretVideos = JSON.parse(fs.readFileSync('./resources/secretVideos.json'))
         return secretVideos
@@ -86,6 +90,9 @@ export class Donaters {
         return this.secretVideos;
     }
 
+    getPhoneNumbers() {
+        return this.phoneNumbers;
+    }
 }
 
 
