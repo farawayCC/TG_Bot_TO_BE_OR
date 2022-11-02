@@ -15,6 +15,7 @@ export const handleCommonRequest = async (req, res) => {
     const chatId = req.body.message.chat.id;
     const text = req.body.message.text;
     const username = req.body.message.from.username;
+    console.log('Touched by', username, 'with text', text)
 
     if (text === '/start') {
         // Greet the user and tell them if they are whitelisted
