@@ -1,9 +1,29 @@
 import parseRTF from 'rtf-parser'
 import fs from 'fs'
+import path from 'path'
+import dotenv from 'dotenv'
+dotenv.config()
 
+
+export const checkPrerequisites = () => {
+    if (!process.env.TOKEN) {
+        console.log('Error: Specify token in environment')
+        process.exit(1)
+    }
+    const donatersFilePath = path.join('resources', 'tg_rassilka_tochnii.rtf')
+    const videosFilePath = path.join('resources', 'secretVideos.json')
+    if (!fs.existsSync(donatersFilePath)) {
+        console.log(`Error: File ${donatersFilePath} not found`)
+        process.exit(1)
+    }
+    if (!fs.existsSync(videosFilePath)) {
+        console.log(`Error: File ${videosFilePath} not found`)
+        process.exit(1)
+    }
+}
 
 export class Donaters {
-    donatersWhitelistPromise // Parsed list from ./resources/tg_rassilka_tochnii.rtf. WITHOUT TELEPHONES!
+    donatersWhitelistPromise // Parsed list from ./resources/tg_rassilka_tochnii.rtf
     secretVideos // Parsed list from ./resources/secretVideos.json
 
     constructor() {
@@ -73,8 +93,11 @@ export class Donaters {
         let telephonesText = donatersListDirty.slice(telephonesIndex + startStringForTelephones.length, donatersListDirty.length)
         telephonesText = telephonesText.replace(',null]', '')
         telephonesText = telephonesText
-        console.log("This is a telephonesText", telephonesText)
+
+        console.log('---In case new phones are added, please update the list in ./resources/telephones.json with the following data---')
+        console.log(telephonesText)
         console.log('Please fill them manually into the file ./resources/telephones.json as an array of strings')
+        console.log()
     }
 
     constructSecretVideosList() {
@@ -109,5 +132,4 @@ export class Texts {
         return texts
     }
 }
-
 
