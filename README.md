@@ -20,3 +20,30 @@
 
 # TODO:
 - [X] Verification by phone number
+- [ ] /help command
+
+# Known issues
+- Phone numbers: users are typing pns how they please, together with the fact that there are a low amount of them (around 1%) we can easily cut them and place in a file by hand.
+
+# Current functionality
+## User side
+- /start command will tell if the user is in the list
+  - not found: tells that they might be in a phone list, plesents a way to share a phone
+  - found: Thanks the user and send the videos list
+
+## Admin side
+- Admin can restart the bot by uploading new files to the dir (js,mjs,json,rtf). This helps to update the list of donaters
+- Admin can change a token in .env file in order to swap the functionality to another bot instance (obtained through BotFather)
+
+## Code-wise
+- Starts the Express server with node-telegram-bot-api integration
+- Builds the needed files from sources on top of a controller.js. 
+The results are build by and stored in DonatersInstance and TextsInstance
+- Listens for a TG users messages. 
+  - on /start: 
+    - comparing them agains a prebuild list
+    - not found: tells that they might be in a phone list, plesents a way to share a phone
+    - found: Thanks the user and send the videos list
+
+  
+ 
