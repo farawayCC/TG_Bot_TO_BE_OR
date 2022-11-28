@@ -19,4 +19,4 @@
 
 
 # TODO:
-- [ ] Verification by phone number
+- [X] Verification by phone number
