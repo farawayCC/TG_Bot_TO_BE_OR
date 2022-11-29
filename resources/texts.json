@@ -1,11 +1,12 @@
 {
     "general": {
         "greeting": "Привет",
-        "whitelisted": "Спасибо за то, что поддерживаете нас!",
+        "whitelisted": "Спасибо, что поддерживаете нас!",
         "notWhitelisted": "Мы не нашли вас в нашем списке. Если вам кажется это ошибкой, пожалуйста, свяжитесь с нами ",
         "secretVideos": "Список доступных вам видео",
-        "outro": "Еще раз спасибо за то, что выбрал БЫТЬ!",
+        "outro": "Держи ссылку на закрытый канал:\n\nhttps://t.me/+pwjwUiRxcmVkZWIy\n\nСпасибо, что выбрал быть!",
         "maybePhone": "Возможно, вы указывали свой телефонный номер? Если да, поделитесь с ботом используя клавиатуру ниже",
-        "supportBotUsername": "@bytilibot"
+        "supportBotUsername": "@bytilibot",
+        "donate": "Спасибо за Помощь - http://www.donationalerts.ru/r/tobeor\nPayPal - ToBeOr2016@gmail.com\nМой Boosty - https://boosty.to/tobeor\nМой Patreon - https://www.patreon.com/tobeor\n\nBitCoin\n  bc1qjcjefqgdga8v0zxf4vtk0qngxdc6x0sdczvs2q\nTether USD-T (ERC20)\n  0x2Fcc725Baad526B83FE3FdABF1F9bd575c6a0F12\nEther\n  0x2Fcc725Baad526B83FE3FdABF1F9bd575c6a0F12\nBTC Cash\n  qzhxv35d2p72gd0v3m3xd8uzjs8pjj29kq0npdgqcq"
     }
 }
