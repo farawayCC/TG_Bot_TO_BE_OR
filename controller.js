@@ -27,23 +27,25 @@ export const handleCommonRequest = async (message, bot) => {
     const username = message.from.username;
     console.log('Touched by', message.from, 'with text', text)
 
+    const isInWhitelist = donaterUsernames.includes('@' + username)
     if (text === '/start') {
         // Greet the user and tell them if they are whitelisted
-        const isInWhitelist = donaterUsernames.includes('@' + username)
-        if (!isInWhitelist) {
+        if (!isInWhitelist)
             speakWithNonDonater(message, chatId, username, bot)
-        } else {
+        else
             speakWithDonater(chatId, username, bot)
-        }
+
     } else if (text === '/donate') {
         bot.sendMessage(chatId, texts.donate)
 
     } else if (text === '/videos') {
+        if (!isInWhitelist)
+            return speakWithNonDonater(message, chatId, username, bot)
+
         // Send secret videos
-        bot.sendMessage(chatId, texts.secretVideos)
-        const promises = secretVideos.map(async (secretVideo) =>
-            bot.sendMessage(chatId, `${secretVideo.name}\n${secretVideo.url}`))
-        await Promise.all(promises)
+        await bot.sendMessage(chatId, texts.secretVideos)
+        for (const video of secretVideos)
+            await bot.sendMessage(chatId, `${video.name}\n${video.url}`)
     }
 }
 
@@ -93,6 +95,6 @@ const handleContact = async (message, chatId, bot) => {
 // --- Donaters logic ---
 const speakWithDonater = async (chatId, username, bot) => {
     // Greet the user
-    bot.sendMessage(chatId, `${texts.greeting} ${username}! ${texts.whitelisted}`)
-    bot.sendMessage(chatId, texts.outro)
+    await bot.sendMessage(chatId, `${texts.greeting} ${username}! ${texts.whitelisted}`)
+    await bot.sendMessage(chatId, texts.outro)
 }
