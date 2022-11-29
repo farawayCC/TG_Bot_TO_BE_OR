@@ -23,17 +23,31 @@ export const handleCommonRequest = async (message, bot) => {
         // Greet the user and tell them if they are whitelisted
         const isInWhitelist = donaterUsernames.includes('@' + username)
         if (!isInWhitelist) {
-            let appeal = !!username ? username : message.from.firstName
-            appeal = !!appeal ? ' ' + appeal : '' // with or without leading space
-            const textForNonDonaters = `${texts.greeting}${appeal}! ${texts.notWhitelisted} ${texts.supportBotUsername}`
-            bot.sendMessage(chatId, textForNonDonaters)
-
-            tryWithContact(message, chatId, bot)
+            speakWithNonDonater(message, chatId, username, bot)
         } else {
             speakWithDonater(chatId, username, bot)
         }
+    } else if (text === '/donate') {
+        bot.sendMessage(chatId, texts.donate)
+
+    } else if (text === '/videos') {
+        // Send secret videos
+        bot.sendMessage(chatId, texts.secretVideos)
+        const promises = secretVideos.map(async (secretVideo) =>
+            bot.sendMessage(chatId, `${secretVideo.name}\n${secretVideo.url}`))
+        await Promise.all(promises)
     }
 }
+
+const speakWithNonDonater = async (message, chatId, username, bot) => {
+    let appeal = !!username ? username : message.from.firstName
+    appeal = !!appeal ? ' ' + appeal : '' // with or without leading space
+    const textForNonDonaters = `${texts.greeting}${appeal}! ${texts.notWhitelisted} ${texts.supportBotUsername}`
+    bot.sendMessage(chatId, textForNonDonaters)
+
+    tryWithContact(message, chatId, bot)
+}
+
 
 const tryWithContact = async (message, chatId, bot) => {
     // Try with contact
@@ -69,17 +83,10 @@ const handleContact = async (message, chatId, bot) => {
 }
 
 // --- Donaters logic ---
-const speakWithDonater = async (chat_id, username, bot) => {
+const speakWithDonater = async (chatId, username, bot) => {
     // Greet the user
-    bot.sendMessage(chat_id, `${texts.greeting} ${username}! ${texts.whitelisted}`)
-
-    // Send secret videos
-    // bot.sendMessage(chat_id, texts.secretVideos)
-    // const promises = secretVideos.map(async (secretVideo) =>
-    //     bot.sendMessage(chat_id, `${secretVideo.name}\n${secretVideo.url}`))
-    // await Promise.all(promises)
-
-    bot.sendMessage(chat_id, texts.outro)
+    bot.sendMessage(chatId, `${texts.greeting} ${username}! ${texts.whitelisted}`)
+    bot.sendMessage(chatId, texts.outro)
 }
 
 
