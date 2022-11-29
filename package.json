@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js -e js,mjs,json,rtf"
+    "start": "nodemon index.js"
   },
   "dependencies": {
     "axios": "^1.1.3",

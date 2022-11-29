@@ -1,5 +1,5 @@
 import { Donaters, Texts } from './utils.js';
-
+import fs from 'fs'
 
 // --- Donaters list --- 
 const DonatersInstance = new Donaters();
@@ -10,6 +10,14 @@ const secretVideos = DonatersInstance.getSecretVideos()
 // --- Translation ---
 const TextsInstance = new Texts();
 const texts = TextsInstance.texts
+
+// --- File logic ---
+// Save whitelisted users to a file on server start
+const filePath = './resources/donatersList.json'
+if (fs.existsSync(filePath))
+    fs.unlinkSync(filePath);
+fs.writeFileSync(filePath, JSON.stringify(donaterUsernames, null, 2))
+
 
 // --- Telegram bot ---
 export const handleCommonRequest = async (message, bot) => {
@@ -87,14 +95,4 @@ const speakWithDonater = async (chatId, username, bot) => {
     // Greet the user
     bot.sendMessage(chatId, `${texts.greeting} ${username}! ${texts.whitelisted}`)
     bot.sendMessage(chatId, texts.outro)
-}
-
-
-
-// Save whitelisted users to a file on server start
-import fs from 'fs'
-const filePath = './resources/donatersList.json'
-if (!fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-    fs.writeFileSync(filePath, JSON.stringify(donaterUsernames, null, 2))
 }
