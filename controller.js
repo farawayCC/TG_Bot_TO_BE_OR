@@ -36,7 +36,7 @@ export const handleCommonRequest = async (message, bot) => {
             speakWithDonater(chatId, username, bot)
 
     } else if (text === '/donate') {
-        bot.sendMessage(chatId, texts.donate)
+        await bot.sendMessage(chatId, texts.donate)
 
     } else if (text === '/videos') {
         if (!isInWhitelist)
@@ -53,7 +53,7 @@ const speakWithNonDonater = async (message, chatId, username, bot) => {
     let appeal = !!username ? username : message.from.firstName
     appeal = !!appeal ? ' ' + appeal : '' // with or without leading space
     const textForNonDonaters = `${texts.greeting}${appeal}! ${texts.notWhitelisted} ${texts.supportBotUsername}`
-    bot.sendMessage(chatId, textForNonDonaters)
+    await bot.sendMessage(chatId, textForNonDonaters)
 
     tryWithContact(message, chatId, bot)
 }
@@ -71,11 +71,9 @@ const tryWithContact = async (message, chatId, bot) => {
             }], ["Cancel"]]
         }
     };
-    bot.sendMessage(message.chat.id, texts.maybePhone, option)
-        .then(() => {
-            // handle user phone
-            bot.once("contact", (message) => { handleContact(message, chatId, bot); })
-        })
+    await bot.sendMessage(message.chat.id, texts.maybePhone, option)
+    // handle user phone
+    bot.once("contact", (message) => { handleContact(message, chatId, bot); })
 }
 
 const handleContact = async (message, chatId, bot) => {
@@ -89,7 +87,7 @@ const handleContact = async (message, chatId, bot) => {
         if (isInWhitelist)
             return speakWithDonater(chatId, appeal, bot)
     }
-    bot.sendMessage(message.chat.id, `Не нашел телефон ${receivedPhone} в списке донатеров :( Если это ошибка, напиши ${texts.supportBotUsername}`)
+    await bot.sendMessage(message.chat.id, `Не нашел телефон ${receivedPhone} в списке донатеров :( Если это ошибка, напиши ${texts.supportBotUsername}`)
 }
 
 // --- Donaters logic ---
