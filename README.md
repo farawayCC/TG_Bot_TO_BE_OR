@@ -23,7 +23,7 @@
 - [X] /help command
 - [X] /videos command
 - [X] /donate command
-- [ ] Improve the parser
+- [X] Improve the parser
 
 # Known issues
 - Phone numbers: users are typing pns how they please, together with the fact that there are a low amount of them (around 1%) we can easily cut them and place in a file by hand.

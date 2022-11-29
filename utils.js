@@ -46,9 +46,11 @@ export class Donaters {
             })
         }
         const docContent = await getDocContent()
-        let donatersListDirty = docContent.map((item) => {
-            return item.content[0]?.value
+        let donatersListDirty = docContent.map((rtfParagraph) => {
+            if (rtfParagraph.content.length > 0)
+                return rtfParagraph.content.map((rtfSpan) => rtfSpan.value)
         })
+        donatersListDirty = donatersListDirty.flat()
 
         // Remove Telephones from the list
         donatersListDirty = JSON.stringify(donatersListDirty)
