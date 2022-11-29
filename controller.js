@@ -74,11 +74,11 @@ const speakWithDonater = async (chat_id, username, bot) => {
     bot.sendMessage(chat_id, `${texts.greeting} ${username}! ${texts.whitelisted}`)
 
     // Send secret videos
-    bot.sendMessage(chat_id, texts.secretVideos)
-    const promises = secretVideos.map(async (secretVideo) =>
-        bot.sendMessage(chat_id, `${secretVideo.name}\n${secretVideo.url}`))
+    // bot.sendMessage(chat_id, texts.secretVideos)
+    // const promises = secretVideos.map(async (secretVideo) =>
+    //     bot.sendMessage(chat_id, `${secretVideo.name}\n${secretVideo.url}`))
+    // await Promise.all(promises)
 
-    await Promise.all(promises)
     bot.sendMessage(chat_id, texts.outro)
 }
 
