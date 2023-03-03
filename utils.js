@@ -1,6 +1,8 @@
 import parseRTF from 'rtf-parser'
 import fs from 'fs'
 import path from 'path'
+import crypto from 'crypto'
+import { mainFileName } from './config.js'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -10,7 +12,7 @@ export const checkPrerequisites = () => {
         console.log('Error: Specify token in environment')
         process.exit(1)
     }
-    const donatersFilePath = path.join('resources', 'tg_rassilka_tochnii.rtf')
+    const donatersFilePath = path.join('resources', mainFileName)
     const videosFilePath = path.join('resources', 'secretVideos.json')
     if (!fs.existsSync(donatersFilePath)) {
         console.log(`Error: File ${donatersFilePath} not found`)
@@ -26,7 +28,13 @@ export class Donaters {
     donatersWhitelistPromise // Parsed list from ./resources/tg_rassilka_tochnii.rtf
     secretVideos // Parsed list from ./resources/secretVideos.json
 
+    fileHex = null // Hash of the file ./resources/tg_rassilka_tochnii.rtf
+
     constructor() {
+        this.reloadValues()
+    }
+
+    reloadValues() {
         this.donatersWhitelistPromise = this.constructTheList();
         this.secretVideos = this.constructSecretVideosList();
         const phonesPath = './resources/telephones.json'
@@ -36,7 +44,7 @@ export class Donaters {
     async constructTheList() {
         const getDocContent = () => {
             return new Promise((resolve, reject) => {
-                parseRTF.stream(fs.createReadStream('./resources/tg_rassilka_tochnii.rtf'), (err, doc) => {
+                parseRTF.stream(fs.createReadStream('./resources/' + mainFileName), (err, doc) => {
                     if (err) {
                         reject(err)
                         return
@@ -107,15 +115,36 @@ export class Donaters {
         return secretVideos
     }
 
+    /**
+     * Checks the file ./resources/tg_rassilka_tochnii.rtf for changes. If it was changed, reloads the list of donaters
+     */
+    checkIfMainFileHashChanged() {
+        const donatersFilePath = path.join('resources', mainFileName)
+        const fileBuffer = fs.readFileSync(donatersFilePath);
+        const hashSum = crypto.createHash('sha256');
+        hashSum.update(fileBuffer);
+
+        const hex = hashSum.digest('hex');
+        const wasChanged = !!hex && hex !== this.fileHex
+        this.fileHex = hex
+        if (wasChanged) {
+            console.log('Main file was changed. Reloading the list of donaters')
+            this.reloadValues()
+        }
+    }
+
     getList() {
+        this.checkIfMainFileHashChanged()
         return this.donatersWhitelistPromise;
     }
 
     getSecretVideos() {
+        this.checkIfMainFileHashChanged()
         return this.secretVideos;
     }
 
     getPhoneNumbers() {
+        this.checkIfMainFileHashChanged()
         return this.phoneNumbers;
     }
 }

@@ -4,6 +4,8 @@ import TelegramBot from 'node-telegram-bot-api'
 import { TOKEN } from './config.js'
 import { handleCommonRequest } from './controller.js';
 import { checkPrerequisites } from './utils.js';
+import FileUploadServer from './fileServer.js';
+
 
 // Check all files are present
 checkPrerequisites()
@@ -15,3 +17,7 @@ const bot = new TelegramBot(TOKEN, { polling: true });
 // messages.
 bot.on('message', (msg) => handleCommonRequest(msg, bot));
 
+
+// --- New List Upload Server --- 
+const server = new FileUploadServer(4000);
+server.start();
