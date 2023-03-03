@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Upload RTF with Secret Token</title>
+</head>
+
+<body>
+    <form id="upload-form">
+        <label for="token-input">Enter Secret Token:</label><br>
+        <input type="text" id="token-input" name="secret_token"><br><br>
+        <label for="rtf-file">Select RTF File:</label><br>
+        <input type="file" id="rtf-file" name="rtf_file"><br><br>
+        <button type="submit" id="submit-btn">Upload</button>
+    </form>
+
+    <script>
+        const form = document.getElementById('upload-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const tokenInput = document.getElementById('token-input');
+            const rtfFileInput = document.getElementById('rtf-file');
+
+            const fileReader = new FileReader();
+
+            fileReader.onload = function (event) {
+                const base64String = event.target.result.split(',')[1];
+
+                const jsonData = {
+                    secret_token: tokenInput.value,
+                    rtf_file: base64String
+                };
+
+                console.log('Uploading file...', new Date());
+                fetch('/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonData),
+                }).then(response => {
+                    console.log('File uploaded successfully.', new Date());
+
+                    tokenInput.value = '';
+                    rtfFileInput.value = '';
+                    alert('File uploaded successfully. You can close this window now.');
+                }).catch(error => {
+                    console.error('Error uploading file:', error);
+                });
+            };
+
+            fileReader.readAsDataURL(rtfFileInput.files[0]);
+        });
+    </script>
+</body>
+
+</html>

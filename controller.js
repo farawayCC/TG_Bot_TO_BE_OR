@@ -3,9 +3,7 @@ import fs from 'fs'
 
 // --- Donaters list --- 
 const DonatersInstance = new Donaters();
-const donaterUsernames = await DonatersInstance.getList()
-const donaterTelephones = DonatersInstance.getPhoneNumbers()
-const secretVideos = DonatersInstance.getSecretVideos()
+var donaterUsernames = await DonatersInstance.getList()
 
 // --- Translation ---
 const TextsInstance = new Texts();
@@ -27,6 +25,7 @@ export const handleCommonRequest = async (message, bot) => {
     const username = message.from.username;
     console.log('Touched by', message.from, 'with text', text)
 
+    donaterUsernames = await DonatersInstance.getList()
     const isInWhitelist = donaterUsernames.includes('@' + username)
     if (text === '/start') {
         // Greet the user and tell them if they are whitelisted
@@ -44,6 +43,7 @@ export const handleCommonRequest = async (message, bot) => {
 
         // Send secret videos
         await bot.sendMessage(chatId, texts.secretVideos)
+        const secretVideos = DonatersInstance.getSecretVideos()
         for (const video of secretVideos)
             await bot.sendMessage(chatId, `${video.name}\n${video.url}`)
     }
@@ -82,6 +82,8 @@ const handleContact = async (message, chatId, bot) => {
     await bot.sendMessage(message.chat.id,
         `Спасибо ${appeal}, ищу у себя в списке телефон ${receivedPhone} ...`)
 
+
+    const donaterTelephones = DonatersInstance.getPhoneNumbers()
     if (donaterTelephones && donaterTelephones.length > 0 && receivedPhone) {
         const isInWhitelist = donaterTelephones.includes(receivedPhone)
         if (isInWhitelist)
