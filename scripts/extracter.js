@@ -11,6 +11,12 @@ const mainOutputPath = 'resources/RAW_donatersList.json'
 cleanFile('resources/tg_4.04.2023.csv')
 
 
+function allToLowerCase(array) {
+    return array.map(item => item.toLowerCase())
+}
+const data = JSON.parse(fs.readFileSync('resources/donatersList.json', 'utf8'))
+fs.writeFileSync('resources/donatersList2.json', JSON.stringify(allToLowerCase(data)))
+
 /**
  * @param {*} mainFileName path to a CSV file with the list of donaters. Header should be "Users"
  */

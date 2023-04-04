@@ -17,10 +17,15 @@ export const handleCommonRequest = async (message, bot) => {
     const chatId = message.chat.id;
 
     const text = message.text;
-    const username = message.from.username;
+
+    let username = message.from.username
+    if (!username)
+        return speakWithNonDonater(message, chatId, username, bot)
+
+    username = '@' + username.toLowerCase()
     logging.info('Touched by', message.from, 'with text', text)
 
-    let isInWhitelist = donaterUsernames.includes('@' + username)
+    let isInWhitelist = DonatersInstance.checkUsername(username)
     if (text === '/start') {
         // Greet the user and tell them if they are whitelisted
         if (!isInWhitelist)

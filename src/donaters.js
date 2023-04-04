@@ -27,7 +27,7 @@ export class Donaters {
         return this.donaters
     }
 
-    checkUser(username) {
+    checkUsername(username) {
         return this.donaters.includes(username)
     }
 
