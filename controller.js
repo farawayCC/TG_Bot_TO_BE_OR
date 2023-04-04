@@ -1,20 +1,15 @@
-import { Donaters, Texts } from './utils.js';
-import fs from 'fs'
+import logging from 'improved-logging';
+import { Donaters } from './src/donaters.js';
+import { Texts } from './src/texts.js';
+import videos from './src/videos.js';
 
 // --- Donaters list --- 
 const DonatersInstance = new Donaters();
-var donaterUsernames = await DonatersInstance.getList()
+var donaterUsernames = await DonatersInstance.getDonaters()
 
 // --- Translation ---
 const TextsInstance = new Texts();
 const texts = TextsInstance.texts
-
-// --- File logic ---
-// Save whitelisted users to a file on server start
-const filePath = './resources/donatersList.json'
-if (fs.existsSync(filePath))
-    fs.unlinkSync(filePath);
-fs.writeFileSync(filePath, JSON.stringify(donaterUsernames, null, 2))
 
 
 // --- Telegram bot ---
@@ -23,10 +18,9 @@ export const handleCommonRequest = async (message, bot) => {
 
     const text = message.text;
     const username = message.from.username;
-    console.log('Touched by', message.from, 'with text', text)
+    logging.info('Touched by', message.from, 'with text', text)
 
-    donaterUsernames = await DonatersInstance.getList()
-    const isInWhitelist = donaterUsernames.includes('@' + username)
+    let isInWhitelist = donaterUsernames.includes('@' + username)
     if (text === '/start') {
         // Greet the user and tell them if they are whitelisted
         if (!isInWhitelist)
@@ -43,7 +37,7 @@ export const handleCommonRequest = async (message, bot) => {
 
         // Send secret videos
         await bot.sendMessage(chatId, texts.secretVideos)
-        const secretVideos = DonatersInstance.getSecretVideos()
+        const secretVideos = videos
         for (const video of secretVideos)
             await bot.sendMessage(chatId, `${video.name}\n${video.url}`)
     }
@@ -77,17 +71,27 @@ const tryWithContact = async (message, chatId, bot) => {
 }
 
 const handleContact = async (message, chatId, bot) => {
-    const receivedPhone = message?.contact?.phone_number
+    let receivedPhone = message?.contact?.phone_number
     const appeal = message.contact?.first_name
     await bot.sendMessage(message.chat.id,
         `Спасибо ${appeal}, ищу у себя в списке телефон ${receivedPhone} ...`)
 
 
-    const donaterTelephones = DonatersInstance.getPhoneNumbers()
-    if (donaterTelephones && donaterTelephones.length > 0 && receivedPhone) {
-        const isInWhitelist = donaterTelephones.includes(receivedPhone)
-        if (isInWhitelist)
-            return speakWithDonater(chatId, appeal, bot)
+    if (receivedPhone) {
+        receivedPhone = receivedPhone.replace('+', '')
+        const isInWhitelist = DonatersInstance.checkMobile(receivedPhone)
+        if (isInWhitelist) {
+
+            // Send secret videos
+            await speakWithDonater(chatId, appeal, bot)
+
+            await bot.sendMessage(chatId, texts.secretVideos)
+            const secretVideos = videos
+            for (const video of secretVideos)
+                await bot.sendMessage(chatId, `${video.name}\n${video.url}`)
+
+            return
+        }
     }
     await bot.sendMessage(message.chat.id, `Не нашел телефон ${receivedPhone} в списке донатеров :( Если это ошибка, напиши ${texts.supportBotUsername}`)
 }

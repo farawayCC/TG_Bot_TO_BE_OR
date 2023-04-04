@@ -34,7 +34,7 @@
                     rtf_file: base64String
                 };
 
-                console.log('Uploading file...', new Date());
+                logging.info('Uploading file...', new Date());
                 fetch('/upload', {
                     method: 'POST',
                     headers: {
@@ -42,13 +42,13 @@
                     },
                     body: JSON.stringify(jsonData),
                 }).then(response => {
-                    console.log('File uploaded successfully.', new Date());
+                    logging.success('File uploaded successfully.', new Date());
 
                     tokenInput.value = '';
                     rtfFileInput.value = '';
                     alert('File uploaded successfully. You can close this window now.');
                 }).catch(error => {
-                    console.error('Error uploading file:', error);
+                    logging.error('Error uploading file:', error);
                 });
             };
 

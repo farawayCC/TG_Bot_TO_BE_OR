@@ -1,6 +1,7 @@
 {
     "ignore": [
-        "**/donatersList.json/**"
+        "**/donatersList.json/**",
+        "resources/donatersList.json"
     ],
     "ext": "js,mjs,json,rtf"
 }

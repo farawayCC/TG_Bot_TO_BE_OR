@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import { mainFileName } from './config.js';
+import logging from 'improved-logging';
 dotenv.config();
 
 /**
@@ -38,10 +39,10 @@ export default class FileUploadServer {
         // write the new file
         fs.writeFile(mainFilePath, rtfFileBuffer, (err) => {
             if (err) {
-                console.error('Error writing file:', err);
+                logging.error('Error writing file:', err);
                 res.sendStatus(500);
             } else {
-                console.log('File saved successfully.');
+                logging.success('File saved successfully.');
                 res.sendStatus(200);
             }
         });
@@ -55,7 +56,7 @@ export default class FileUploadServer {
 
     start() {
         this.app.listen(this.port, () => {
-            console.log(`Server started to listen for forms ${this.port}.`);
+            logging.success(`Server started to listen for forms ${this.port}.`);
         });
     }
 }
