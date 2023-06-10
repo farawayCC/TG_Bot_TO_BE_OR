@@ -8,14 +8,12 @@ dotenv.config()
 
 const mainOutputPath = 'resources/RAW_donatersList.json'
 
-cleanFile('resources/tg_4.04.2023.csv')
+cleanFile('resources/newCSV.csv')
 
 
-function allToLowerCase(array) {
-    return array.map(item => item.toLowerCase())
-}
-const data = JSON.parse(fs.readFileSync('resources/donatersList.json', 'utf8'))
-fs.writeFileSync('resources/donatersList2.json', JSON.stringify(allToLowerCase(data)))
+const allToLowerCase = (array) => array.map(item => item.toLowerCase())
+const previousJSONList = JSON.parse(fs.readFileSync('resources/donatersList.json', 'utf8'))
+fs.writeFileSync('resources/donatersList2.json', JSON.stringify(allToLowerCase(previousJSONList)))
 
 /**
  * @param {*} mainFileName path to a CSV file with the list of donaters. Header should be "Users"
@@ -28,14 +26,25 @@ async function cleanFile(mainFileName) {
         return item['Users']
     })
 
+    // Combine the previous list with the new one
+    filedata = filedata.concat(previousJSONList)
+
     const isWithoutSpaces = (item) => !item.includes(' ')
     const isShortEnough = (item) => item.length !== 1
     const isNotWithCyrillicLetters = (item) => !/[а-яА-Я]/.test(item)
+    const isNotEmail = (item) => item.count('@') <= 1
+    const isWithoutDots = (item) => !item.includes('.')
 
     // split the list into two: correct and wrong, so that we can save them separately
     const objectWrongAndCorrect = { wrong: [], correct: [] }
     filedata.forEach(item => {
-        if (isWithoutSpaces(item) && isShortEnough(item) && isNotWithCyrillicLetters(item)) {
+        if (
+            isWithoutSpaces(item)
+            && isShortEnough(item)
+            && isNotWithCyrillicLetters(item)
+            && isNotEmail(item)
+            && isWithoutDots(item)
+        ) {
             objectWrongAndCorrect.correct.push(item)
         } else {
             objectWrongAndCorrect.wrong.push(item)
@@ -58,6 +67,8 @@ async function cleanFile(mainFileName) {
     if (fs.existsSync(wrongListPath))
         fs.unlinkSync(wrongListPath);
     fs.writeFileSync(wrongListPath, JSON.stringify(wrongList))
+
+    logging.success(`Done! The list of donaters (${filedata.length}) is saved to ${mainOutputPath}. The list of wrong donaters is saved to ${wrongListPath}.`)
 
     return filedata
 }
@@ -96,3 +107,10 @@ function extractPhoneNumbers(donatersListDirty) {
     console.log()
 }
 
+
+// extend string prototype with .count() method
+String.prototype.count = function (c) {
+    var result = 0, i = 0;
+    for (i; i < this.length; i++) if (this[i] == c) result++;
+    return result;
+}
